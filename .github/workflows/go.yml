@@ -3,8 +3,24 @@ name: Go
 on: [push]
 
 jobs:
+
+  code-check:
+
+    name: Check formatting, linting, vetting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Run the formatter, linter, and vetter
+        uses: dell/common-github-actions/go-code-formatter-linter-vetter@main
+        with:
+          directories: ./...
+
   build:
 
+    name: Build & Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
