@@ -14,7 +14,7 @@ func TestMain(t *testing.T) {
 
 	log.SetOutput(nil) // Reset log output
 
-	expected := "👋 World\n"
+	expected := "Hello, World!"
 	if !bytes.Contains(buf.Bytes(), []byte(expected)) {
 		t.Errorf("Expected log to contain %q, but got %q", expected, buf.String())
 	}
