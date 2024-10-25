@@ -8,18 +8,22 @@ import (
 	"os"
 )
 
+// Article represents a news article.
 type Article struct {
 	Title string `json:"title"`
 }
 
+// Response represents a response from the news API.
 type Response struct {
 	Articles []Article `json:"articles"`
 }
 
+// Configuration represents the configuration for the news API.
 type Configuration struct {
 	NewsAPIURL string `json:"newsAPIURL"` // Change to a single string
 }
 
+// FetchNews fetches news articles from the news API.
 func FetchNews() ([]Article, error) {
 	file, err := os.Open("conf.json")
 	if err != nil {
