@@ -7,6 +7,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/mmcdole/gofeed"
 )
 
 type model struct {
@@ -15,10 +16,10 @@ type model struct {
 	selected map[int]struct{} // which to-do items are selected
 }
 
-func initialModel(articles []api.Article) model {
-	choices := make([]string, len(articles))
-	for i, article := range articles {
-		choices[i] = article.Title
+func initialModel(titles []*gofeed.Item) model {
+	choices := make([]string, len(titles))
+	for i, item := range titles {
+		choices[i] = item.Title
 	}
 
 	return model{
@@ -58,7 +59,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := "What should we buy at the market?\n\n"
+	s := "The news for today\n\n"
 	for i, choice := range m.choices {
 		cursor := " "
 		if m.cursor == i {
@@ -75,13 +76,13 @@ func (m model) View() string {
 }
 
 func main() {
-	articles, err := api.FetchNews()
+	Titles, err := api.FetchNews()
 	if err != nil {
 		fmt.Println("Error fetching news:", err)
 		os.Exit(1)
 	}
 
-	p := tea.NewProgram(initialModel(articles))
+	p := tea.NewProgram(initialModel(Titles), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)

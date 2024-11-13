@@ -3,31 +3,41 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
+	"path/filepath"
+
+	"github.com/mmcdole/gofeed"
 )
-
-// Article represents a news article.
-type Article struct {
-	Title string `json:"title"`
-}
-
-// Response represents a response from the news API.
-type Response struct {
-	Articles []Article `json:"articles"`
-}
 
 // Configuration represents the configuration for the news API.
 type Configuration struct {
-	NewsAPIURL string `json:"newsAPIURL"` // Change to a single string
+	MacrumorsAPIURL string `json:"MacrumorsAPIURL"` // Change to a single string
 }
 
 // FetchNews fetches news articles from the news API.
-func FetchNews() ([]Article, error) {
-	file, err := os.Open("conf.json")
+func FetchNews() ([]*gofeed.Item, error) {
+	fp := gofeed.NewParser()
+	// First, try to get the directory of the executable
+	executablePath, err := os.Executable()
 	if err != nil {
-		return nil, fmt.Errorf("failed to open configuration file: %w", err)
+		return nil, fmt.Errorf("failed to get executable path: %w", err)
+	}
+	executableDir := filepath.Dir(executablePath)
+
+	// Try to open the configuration file in the executable directory
+	configPath := filepath.Join(executableDir, "conf.json")
+	file, err := os.Open(configPath)
+	if err != nil {
+		// If it fails, fall back to the current working directory
+		currentDir, err := os.Getwd()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get current working directory: %w", err)
+		}
+		configPath = filepath.Join(currentDir, "conf.json")
+		file, err = os.Open(configPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open configuration file: %w", err)
+		}
 	}
 	defer file.Close()
 
@@ -38,34 +48,12 @@ func FetchNews() ([]Article, error) {
 		return nil, fmt.Errorf("failed to decode configuration: %w", err)
 	}
 
-	if len(configuration.NewsAPIURL) == 0 {
-		return nil, fmt.Errorf("no URLs found in configuration")
+	if len(configuration.MacrumorsAPIURL) == 0 {
+		return nil, fmt.Errorf("no Macrumors API URL found in configuration")
 	}
 
-	url := configuration.NewsAPIURL
+	url := configuration.MacrumorsAPIURL
 
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %w", err)
-	}
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error executing request: %w", err)
-	}
-	defer res.Body.Close()
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error reading response body: %w", err)
-	}
-
-	// Unmarshal the JSON response
-	var data Response
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling response: %w", err)
-	}
-
-	return data.Articles, nil
+	feed, _ := fp.ParseURL(url)
+	return feed.Items, nil
 }
