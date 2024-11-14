@@ -1,4 +1,4 @@
-package openbrowser
+package openBrowser
 
 import (
 	"os/exec"
