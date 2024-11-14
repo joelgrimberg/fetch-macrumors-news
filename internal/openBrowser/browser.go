@@ -3,7 +3,6 @@ package openbrowser
 import (
 	"os/exec"
 	"runtime"
-	"strings"
 )
 
 // OpenURLFunc is a variable that can be set to a different function for testing.
@@ -24,10 +23,10 @@ func OpenURL(url string) error {
 }
 
 // isWSL checks if the Go program is running inside Windows Subsystem for Linux
-func isWSL() bool {
-	releaseData, err := exec.Command("uname", "-r").Output()
-	if err != nil {
-		return false
-	}
-	return strings.Contains(strings.ToLower(string(releaseData)), "microsoft")
-}
+// func isWSL() bool {
+// 	releaseData, err := exec.Command("uname", "-r").Output()
+// 	if err != nil {
+// 		return false
+// 	}
+// 	return strings.Contains(strings.ToLower(string(releaseData)), "microsoft")
+// }
