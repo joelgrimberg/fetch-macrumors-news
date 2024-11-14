@@ -11,3 +11,7 @@
 
 for now, just download the code from github, run it locally with
 `go run main.go` or build it with `go build main.go` and run the binary.
+
+## Configuration
+
+copy the conf.json to the folder where you store the executable and modify it to your needs.
