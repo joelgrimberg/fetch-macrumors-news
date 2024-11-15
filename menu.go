@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"main/api"
-	openBrowser "main/internal/openBrowser"
+	openBrowser "main/internal/openbrowser"
 	"os"
 	"strings"
 
