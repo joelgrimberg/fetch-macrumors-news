@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"main/api"
-	openBrowser "main/internal/openbrowser"
+	"main/internal/openbrowser"
 	"os"
 	"strings"
 
@@ -93,7 +93,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	if m.choice != "" {
 		link := m.url[m.list.Index()]
-		if err := openBrowser.OpenURL(link); err != nil {
+		if err := openbrowser.OpenURL(link); err != nil {
 			fmt.Println("Error opening URL:", err)
 		}
 
